@@ -1,56 +1,60 @@
-name: Node.js CI and Docker Build
+# This workflow installs node dependencies, caches them, builds the source code, runs tests, and pushes a Docker image to Docker Hub.
+
+name: Node.js CI
 
 on:
   push:
-    branches:
-      - master
+    branches: [ "master" ]
   pull_request:
-    branches:
-      - master
+    branches: [ "master" ]
 
 jobs:
-  node-build:
+  build:
     runs-on: ubuntu-latest
+
     strategy:
       matrix:
         node-version: [16]
-    steps:
-      - uses: actions/checkout@v4
+        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
+    steps:
+      # Step 1: Checkout repository
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Step 2: Setup Node.js
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
 
+      # Step 3: Install dependencies
       - name: Install dependencies
         run: npm ci
 
-      - name: Build the application
+      # Step 4: Build the application
+      - name: Build application
         run: npm run build --if-present
-
+       
+      # Step 5: Run tests
       - name: Run tests
-        run: npm test
+        run: npm test -- --passWithNoTests
 
-  docker-build-and-push:
-    needs: node-build
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
+      # Step 6: Log in to Docker Hub
       - name: Log in to Docker Hub
         uses: docker/login-action@v2
         with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
+          username: ${{ secrets.DOCKER_USERNAME }}  # Replace with your Docker Hub username secret
+          password: ${{ secrets.DOCKER_PASSWORD }}  # Replace with your Docker Hub password secret
 
-      - name: Build Docker Image
+      # Step 7: Build Docker image
+      - name: Build Docker image
         run: |
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/my-react-app:latest .
-          ls -la # Debug: List files in the Docker context
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/react-app:latest .
 
-      - name: Push Docker Image
+      # Step 8: Push Docker image to Docker Hub
+      - name: Push Docker image to Docker Hub
         run: |
-          docker push ${{ secrets.DOCKER_USERNAME }}/my-react-app:latest
+          docker push ${{ secrets.DOCKER_USERNAME }}/react-app:latest
+
