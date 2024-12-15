@@ -1,7 +1,7 @@
 # Step 1: Build the React app
 FROM node:16 AS build
 
-# Set the working directory
+# Set the working directoryy
 WORKDIR /app
 
 # Copy package.json and package-lock.json
