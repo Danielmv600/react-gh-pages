@@ -6,8 +6,14 @@ WORKDIR /app
 # Set environment variable for legacy OpenSSL provider
 ENV NODE_OPTIONS=--openssl-legacy-provider
 
+# Install build dependencies (if needed)
+RUN apt-get update && apt-get install -y python3 build-essential
+
 # Copy package.json and package-lock.json first (to cache dependencies)
 COPY package.json package-lock.json ./
+
+# Disable optional dependencies (optional)
+ENV npm_config_optional=false
 
 # Install dependencies
 RUN npm ci
