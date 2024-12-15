@@ -3,10 +3,10 @@ name: Node.js CI and Docker Build
 on:
   push:
     branches:
-      - master # Trigger on push to master
+      - master
   pull_request:
     branches:
-      - master # Trigger on pull requests to master
+      - master
 
 jobs:
   node-build:
@@ -33,7 +33,7 @@ jobs:
         run: npm test
 
   docker-build-and-push:
-    needs: node-build # Run only after the Node.js job is successful
+    needs: node-build
     runs-on: ubuntu-latest
 
     steps:
@@ -49,6 +49,7 @@ jobs:
       - name: Build Docker Image
         run: |
           docker build -t ${{ secrets.DOCKER_USERNAME }}/my-react-app:latest .
+          ls -la # Debug: List files in the Docker context
 
       - name: Push Docker Image
         run: |
