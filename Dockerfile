@@ -3,8 +3,8 @@ FROM node:16
 # Set the working directory inside the container
 WORKDIR /app
 
-# Set environment variable for legacy OpenSSL provider
-ENV NODE_OPTIONS=--openssl-legacy-provider
+# Set environment variable for legacy OpenSSL provider (remove this line)
+# ENV NODE_OPTIONS=--openssl-legacy-provider
 
 # Copy package.json and package-lock.json first (to cache dependencies)
 COPY package.json package-lock.json ./
