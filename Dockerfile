@@ -3,17 +3,14 @@ FROM node:16
 # Set the working directory inside the container
 WORKDIR /app
 
+# Install build tools (for native modules)
+RUN apt-get update && apt-get install -y python3 build-essential
+
 # Set environment variable for legacy OpenSSL provider
 ENV NODE_OPTIONS=--openssl-legacy-provider
 
-# Install build dependencies (if needed)
-RUN apt-get update && apt-get install -y python3 build-essential
-
-# Copy package.json and package-lock.json first (to cache dependencies)
+# Copy package.json and package-lock.json first
 COPY package.json package-lock.json ./
-
-# Disable optional dependencies (optional)
-ENV npm_config_optional=false
 
 # Install dependencies
 RUN npm ci
